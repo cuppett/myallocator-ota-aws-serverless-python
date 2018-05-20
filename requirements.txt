@@ -1,0 +1,4 @@
+wheel
+mysql-connector-python-rf
+SQLAlchemy
+bcrypt

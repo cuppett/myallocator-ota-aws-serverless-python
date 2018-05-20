@@ -1,2 +1,5 @@
-# myallocator-ota-aws-serverless-python
-Python AWS Lambda for OTA's to easily integrate with the MyAllocator OTA BuildToUs API
+MyAllocator OTA web service
+==============================================
+
+Python web service using AWS Lambda and Amazon API Gateway. This implements the 
+OTA Build-To-Us interface from myallocator.com and CloudBeds.
