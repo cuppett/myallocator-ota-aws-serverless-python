@@ -1,0 +1,5 @@
+DROP DATABASE IF EXISTS test;
+DROP USER IF EXISTS test;
+CREATE DATABASE test;
+CREATE USER test@'localhost';
+GRANT ALL PRIVILEGES ON test.* TO test@'localhost' IDENTIFIED BY '';

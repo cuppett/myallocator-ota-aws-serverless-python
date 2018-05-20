@@ -1,0 +1,45 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+
+      # Upgrade AWS CLI to the latest version
+      - pip install --upgrade awscli
+      # Installing dependencies
+      - yum -y install python36 python36-virtualenv python36-pip
+      - yum -y install gcc libffi-devel python36-devel
+      # Build virtualenv
+      - virtualenv-3.6 .
+      - source bin/activate
+      # Install required modules
+      - pip install -r requirements.txt
+
+  pre_build:
+    commands:
+
+      # Discover and run unit tests in the 'tests' directory. For more information, see <https://docs.python.org/3/library/unittest.html#test-discovery>
+      - yum -y install mysql57-server
+      - echo "NETWORKING=yes" > /etc/sysconfig/network
+      - /sbin/service mysqld start
+      - /usr/bin/mysql -u root < testdb.sql
+      - /usr/bin/mysql -u test test < schema.sql
+      - python -m unittest discover tests
+  
+  build:
+    commands:
+
+      # Moving stuff around for virtualenv and cleaning up.
+      - rm -fR __pycache__ lib/python3.6/site-packages/__pycache__ lib64/python3.6/site-packages/__pycache__
+      - mv lib/python3.6/site-packages/* .
+      - mv lib64/python3.6/site-packages/* .
+      - mv lib64/python3.6/site-packages/.libs* .
+      - rm -fR bin lib lib64 tests local .idea *.sql
+
+      # Use AWS SAM to package the application by using AWS CloudFormation
+      - aws cloudformation package --template template.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
+
+artifacts:
+  type: zip
+  files:
+    - template-export.yml
